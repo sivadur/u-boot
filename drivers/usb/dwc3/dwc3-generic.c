@@ -61,18 +61,17 @@ static int dwc3_generic_peripheral_remove(struct udevice *dev)
 static int dwc3_generic_peripheral_ofdata_to_platdata(struct udevice *dev)
 {
 	struct dwc3 *priv = dev_get_priv(dev);
-	int node = dev_of_offset(dev);
 
-	priv->regs = (void *)devfdt_get_addr(dev);
+	priv->regs = (void *)dev_read_addr(dev);
 	priv->regs += DWC3_GLOBALS_REGS_START;
 
-	priv->maximum_speed = usb_get_maximum_speed(node);
+	priv->maximum_speed = usb_get_maximum_speed(dev->node);
 	if (priv->maximum_speed == USB_SPEED_UNKNOWN) {
 		pr_err("Invalid usb maximum speed\n");
 		return -ENODEV;
 	}
 
-	priv->dr_mode = usb_get_dr_mode(node);
+	priv->dr_mode = usb_get_dr_mode(dev->node);
 	if (priv->dr_mode == USB_DR_MODE_UNKNOWN) {
 		pr_err("Invalid usb mode setup\n");
 		return -ENODEV;
@@ -100,13 +99,11 @@ U_BOOT_DRIVER(dwc3_generic_peripheral) = {
 
 static int dwc3_generic_bind(struct udevice *parent)
 {
-	const void *fdt = gd->fdt_blob;
-	int node;
+	ofnode node;
 	int ret;
 
-	for (node = fdt_first_subnode(fdt, dev_of_offset(parent)); node > 0;
-	     node = fdt_next_subnode(fdt, node)) {
-		const char *name = fdt_get_name(fdt, node, NULL);
+	dev_for_each_subnode(node, parent) {
+		const char *name = (char *)ofnode_get_name(node);
 		enum usb_dr_mode dr_mode;
 		struct udevice *dev;
 		const char *driver;
@@ -133,7 +130,7 @@ static int dwc3_generic_bind(struct udevice *parent)
 		};
 
 		ret = device_bind_driver_to_node(parent, driver, name,
-						 offset_to_ofnode(node), &dev);
+						 node, &dev);
 		if (ret) {
 			debug("%s: not able to bind usb device mode\n",
 			      __func__);

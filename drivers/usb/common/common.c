@@ -10,6 +10,7 @@
 #include <linux/libfdt.h>
 #include <linux/usb/otg.h>
 #include <linux/usb/ch9.h>
+#include <dm.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -20,13 +21,12 @@ static const char *const usb_dr_modes[] = {
 	[USB_DR_MODE_OTG]		= "otg",
 };
 
-enum usb_dr_mode usb_get_dr_mode(int node)
+enum usb_dr_mode usb_get_dr_mode(ofnode node)
 {
-	const void *fdt = gd->fdt_blob;
 	const char *dr_mode;
 	int i;
 
-	dr_mode = fdt_getprop(fdt, node, "dr_mode", NULL);
+	dr_mode = ofnode_get_property(node, "dr_mode", NULL);
 	if (!dr_mode) {
 		pr_err("usb dr_mode not found\n");
 		return USB_DR_MODE_UNKNOWN;
@@ -48,13 +48,12 @@ static const char *const speed_names[] = {
 	[USB_SPEED_SUPER] = "super-speed",
 };
 
-enum usb_device_speed usb_get_maximum_speed(int node)
+enum usb_device_speed usb_get_maximum_speed(ofnode node)
 {
-	const void *fdt = gd->fdt_blob;
 	const char *max_speed;
 	int i;
 
-	max_speed = fdt_getprop(fdt, node, "maximum-speed", NULL);
+	max_speed = ofnode_get_property(node, "maximum-speed", NULL);
 	if (!max_speed) {
 		pr_err("usb maximum-speed not found\n");
 		return USB_SPEED_UNKNOWN;

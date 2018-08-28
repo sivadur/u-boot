@@ -9,6 +9,8 @@
 #ifndef __LINUX_USB_OTG_H
 #define __LINUX_USB_OTG_H
 
+#include <dm/ofnode.h>
+
 enum usb_dr_mode {
 	USB_DR_MODE_UNKNOWN,
 	USB_DR_MODE_HOST,
@@ -23,7 +25,7 @@ enum usb_dr_mode {
  * The function gets phy interface string from property 'dr_mode',
  * and returns the correspondig enum usb_dr_mode
  */
-enum usb_dr_mode usb_get_dr_mode(int node);
+enum usb_dr_mode usb_get_dr_mode(ofnode node);
 
 /**
  * usb_get_maximum_speed() - Get maximum speed for given device
@@ -32,6 +34,6 @@ enum usb_dr_mode usb_get_dr_mode(int node);
  * The function gets phy interface string from property 'maximum-speed',
  * and returns the correspondig enum usb_device_speed
  */
-enum usb_device_speed usb_get_maximum_speed(int node);
+enum usb_device_speed usb_get_maximum_speed(ofnode node);
 
 #endif /* __LINUX_USB_OTG_H */

@@ -121,10 +121,9 @@ static int xhci_usb_remove(struct udevice *dev)
 static int xhci_usb_ofdata_to_platdata(struct udevice *dev)
 {
 	struct zynqmp_xhci_platdata *plat = dev_get_platdata(dev);
-	const void *blob = gd->fdt_blob;
 
 	/* Get the base address for XHCI controller from the device node */
-	plat->hcd_base = fdtdec_get_addr(blob, dev_of_offset(dev), "reg");
+	plat->hcd_base = dev_read_addr(dev);
 	if (plat->hcd_base == FDT_ADDR_T_NONE) {
 		debug("Can't get the XHCI register base address\n");
 		return -ENXIO;

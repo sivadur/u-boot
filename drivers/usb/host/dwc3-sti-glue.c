@@ -153,18 +153,17 @@ static int sti_dwc3_glue_ofdata_to_platdata(struct udevice *dev)
 static int sti_dwc3_glue_bind(struct udevice *dev)
 {
 	struct sti_dwc3_glue_platdata *plat = dev_get_platdata(dev);
-	int dwc3_node;
+	ofnode dwc3_node;
 
 	/* check if one subnode is present */
-	dwc3_node = fdt_first_subnode(gd->fdt_blob, dev_of_offset(dev));
-	if (dwc3_node <= 0) {
+	dwc3_node = dev_read_first_subnode(dev);
+	if (!ofnode_valid(dwc3_node)) {
 		pr_err("Can't find subnode for %s\n", dev->name);
 		return -ENODEV;
 	}
 
 	/* check if the subnode compatible string is the dwc3 one*/
-	if (fdt_node_check_compatible(gd->fdt_blob, dwc3_node,
-				      "snps,dwc3") != 0) {
+	if (ofnode_device_is_compatible(dwc3_node, "snps,dwc3") != 0) {
 		pr_err("Can't find dwc3 subnode for %s\n", dev->name);
 		return -ENODEV;
 	}

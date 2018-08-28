@@ -202,6 +202,7 @@ static int xhci_dwc3_probe(struct udevice *dev)
 	struct dwc3 *dwc3_reg;
 	enum usb_dr_mode dr_mode;
 	int ret;
+	ofnode node;
 
 	hccr = (struct xhci_hccr *)((uintptr_t)dev_read_addr(dev));
 	hcor = (struct xhci_hcor *)((uintptr_t)hccr +
@@ -215,7 +216,7 @@ static int xhci_dwc3_probe(struct udevice *dev)
 
 	dwc3_core_init(dwc3_reg);
 
-	dr_mode = usb_get_dr_mode(dev_of_offset(dev));
+	dr_mode = usb_get_dr_mode(node);
 	if (dr_mode == USB_DR_MODE_UNKNOWN)
 		/* by default set dual role mode to HOST */
 		dr_mode = USB_DR_MODE_HOST;
